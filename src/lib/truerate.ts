@@ -110,10 +110,14 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
   };
 }
 
-export const money = (n: number) =>
-  `£${Math.round(n).toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
+export const money = (n: number) => {
+  const r = Math.round(n);
+  const abs = Math.abs(r).toLocaleString("en-GB", { maximumFractionDigits: 0 });
+  return `${r < 0 ? "-" : ""}£${abs}`;
+};
 
-export const rate = (n: number) => `£${n.toFixed(1)}`;
+export const rate = (n: number) =>
+  `${n < 0 ? "-" : ""}£${Math.abs(n).toFixed(1)}`;
 
 export const hours = (n: number) =>
   n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
