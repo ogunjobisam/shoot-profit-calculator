@@ -495,6 +495,14 @@ function TrueRatePage() {
             Share this verdict
           </button>
 
+          <button
+            type="button"
+            onClick={handleDownloadImage}
+            className="-mt-4 w-full rounded-md border border-border px-5 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+          >
+            Download image (PNG)
+          </button>
+
 
           <div className="rounded-md border border-border bg-card p-6">
             <p className="text-sm text-muted-foreground">You should have quoted</p>
