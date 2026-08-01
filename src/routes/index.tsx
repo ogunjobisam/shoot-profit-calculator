@@ -151,6 +151,28 @@ function TrueRatePage() {
     }
   }
 
+  async function handleDownloadImage() {
+    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+    if (!node) return;
+    try {
+      const { toBlob } = await import("html-to-image");
+      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+      if (!blob) throw new Error("Could not render card");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "trueshootrate.png";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Verdict card saved as an image.");
+      void trackEvent("shared", results.band);
+    } catch {
+      toast.error("Couldn't create the image. Try again.");
+    }
+  }
+
+
+
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -471,6 +493,14 @@ function TrueRatePage() {
             className="w-full rounded-md border border-primary px-5 py-4 text-base font-semibold transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             Share this verdict
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDownloadImage}
+            className="-mt-4 w-full rounded-md border border-border px-5 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+          >
+            Download image (PNG)
           </button>
 
 
