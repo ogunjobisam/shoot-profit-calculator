@@ -402,7 +402,13 @@ function TrueRatePage() {
           </div>
 
           <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card p-4">
-            <span className="text-sm font-semibold">Show my fee on the card</span>
+            <div>
+              <span className="text-sm font-semibold">Show my fee on the card</span>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Off means your fee is stripped from the image and PDF you share — only the hourly
+                rate is shown.
+              </p>
+            </div>
             <button
               type="button"
               role="switch"
