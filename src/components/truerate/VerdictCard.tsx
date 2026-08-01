@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import {
-  BAND_LABEL,
+  bandLabel,
   hours,
   money,
   rate,
@@ -72,7 +72,7 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
         className={`${style.bg} ${style.fg} relative overflow-hidden rounded-lg p-7 transition-colors duration-300 sm:p-10`}
       >
         <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${style.sub}`}>
-          {BAND_LABEL[results.band]}
+          {bandLabel(results)}
         </p>
 
         <p

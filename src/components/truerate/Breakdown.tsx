@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  BAND_LABEL,
+  bandLabel,
   hours,
   money,
   rate,
@@ -103,7 +103,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       doc.setTextColor(bandText[0], bandText[1], bandText[2]);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.text(BAND_LABEL[results.band].toUpperCase(), hx, hy, { charSpace: 1.6 });
+      doc.text(bandLabel(results).toUpperCase(), hx, hy, { charSpace: 1.6 });
 
       hy += 58;
       doc.setFont(display, displayStyle);
