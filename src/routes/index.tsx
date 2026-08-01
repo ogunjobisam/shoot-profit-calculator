@@ -62,8 +62,11 @@ function TrueRatePage() {
   const [email, setEmail] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showFeeOnCard, setShowFeeOnCard] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
   const trackedRef = useRef(false);
+
 
   const results = useMemo(() => calculate(input), [input]);
   const hasResults = input.fee > 0;
@@ -93,12 +96,14 @@ function TrueRatePage() {
 
 
   async function handleShare() {
-    if (!cardRef.current) return;
+    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+    if (!node) return;
     const shareUrl = "https://trueshootrate.app/";
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(cardRef.current, { pixelRatio: 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
+
 
       const file = new File([blob], "trueshootrate.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
@@ -385,6 +390,36 @@ function TrueRatePage() {
             shootsPerYear={input.shootsPerYear}
           />
 
+          {/* Off-screen fee-less variant used for the shared image. */}
+          <div aria-hidden className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]">
+            <VerdictCard
+              ref={exportRef}
+              results={results}
+              fee={input.fee}
+              shootsPerYear={input.shootsPerYear}
+              hideFee
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card p-4">
+            <span className="text-sm font-semibold">Show my fee on the card</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showFeeOnCard}
+              onClick={() => setShowFeeOnCard((v) => !v)}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                showFeeOnCard ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-background transition-all ${
+                  showFeeOnCard ? "left-6" : "left-1"
+                }`}
+              />
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={handleShare}
@@ -392,6 +427,7 @@ function TrueRatePage() {
           >
             Share this verdict
           </button>
+
 
           <div className="rounded-md border border-border bg-card p-6">
             <p className="text-sm text-muted-foreground">You should have quoted</p>

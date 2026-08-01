@@ -31,7 +31,9 @@ interface VerdictCardProps {
   results: TrueRateResults;
   fee: number;
   shootsPerYear: number;
+  hideFee?: boolean;
 }
+
 
 // Eases a numeric value towards its target over ~400ms.
 function useAnimatedNumber(target: number, duration = 400) {
@@ -60,7 +62,8 @@ function useAnimatedNumber(target: number, duration = 400) {
 }
 
 export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
-  ({ results, fee, shootsPerYear }, ref) => {
+  ({ results, fee, shootsPerYear, hideFee = false }, ref) => {
+
     const style = BAND_STYLES[results.band];
     const animatedRate = useAnimatedNumber(results.trueHourlyRate ?? 0);
     const bigNumber =
@@ -89,8 +92,9 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
         ) : null}
 
         <p className="mt-7 max-w-md text-lg font-medium leading-snug sm:text-xl">
-          {verdictLine(results, fee)}
+          {verdictLine(results, fee, hideFee)}
         </p>
+
 
         <p className={`mt-4 text-sm ${style.sub}`}>
           True margin: {results.marginPct === null ? "—" : `${Math.round(results.marginPct)}%`} ·{" "}

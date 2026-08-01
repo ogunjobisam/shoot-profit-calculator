@@ -147,18 +147,25 @@ export const rate = (n: number) =>
 export const hours = (n: number) =>
   n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
 
-export function verdictLine(res: TrueRateResults, fee: number): string {
+export function verdictLine(res: TrueRateResults, fee: number, hideFee = false): string {
   const feeText = money(fee);
   if (res.paidToWork || res.trueHourlyRate === null) {
-    return `Your ${feeText} shoot cost you more than it paid. You paid to work.`;
+    return hideFee
+      ? `This shoot cost more than it paid. I paid to work.`
+      : `Your ${feeText} shoot cost you more than it paid. You paid to work.`;
   }
   const rateText = `${rate(res.trueHourlyRate)}/hour`;
-  if (res.band === "red")
-    return `Your ${feeText} shoot paid you ${rateText}. That's below minimum wage territory.`;
-  if (res.band === "amber")
-    return `Your ${feeText} shoot paid you ${rateText}. Skilled work, hobby money.`;
-  return `Your ${feeText} shoot paid you ${rateText}. Now protect it.`;
+  const sting =
+    res.band === "red"
+      ? "That's below minimum wage territory."
+      : res.band === "amber"
+        ? "Skilled work, hobby money."
+        : "Now protect it.";
+  return hideFee
+    ? `This shoot paid ${rateText}. ${sting}`
+    : `Your ${feeText} shoot paid you ${rateText}. ${sting}`;
 }
+
 
 // Full-time equivalent: 37.5 hrs/week × 52 weeks, rounded to nearest £1,000.
 export const FULL_TIME_HOURS_PER_YEAR = 37.5 * 52;
