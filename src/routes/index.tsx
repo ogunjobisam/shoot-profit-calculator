@@ -133,6 +133,11 @@ function TrueRatePage() {
           : null;
       await captureEmail(email.trim().toLowerCase(), source);
       void trackEvent("email_captured", results.band);
+      try {
+        window.localStorage.setItem("tsr_unlocked", "1");
+      } catch {
+        /* storage unavailable */
+      }
       setUnlocked(true);
     } catch {
       toast.error("Something went wrong. Try again.");
@@ -318,7 +323,7 @@ function TrueRatePage() {
       </div>
 
       {hasResults ? (
-        <div className="mt-14 space-y-8">
+        <div id="verdict" className="mt-14 space-y-8">
           <VerdictCard ref={cardRef} results={results} fee={input.fee} />
 
           <button
