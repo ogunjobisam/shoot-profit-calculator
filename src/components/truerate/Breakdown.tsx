@@ -51,10 +51,10 @@ export function Breakdown({ input, results }: BreakdownProps) {
       const left = 48;
 
       doc.setFontSize(22);
-      doc.text("TrueRate — shoot breakdown", left, y);
+      doc.text("TrueShootRate — shoot breakdown", left, y);
       y += 26;
       doc.setFontSize(10);
-      doc.text(`Generated ${new Date().toLocaleDateString("en-GB")} · truerate.uk`, left, y);
+      doc.text(`Generated ${new Date().toLocaleDateString("en-GB")} · trueshootrate.app`, left, y);
       y += 32;
 
       const line = (label: string, value: string) => {
@@ -112,7 +112,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
         y,
       );
 
-      doc.save("truerate-breakdown.pdf");
+      doc.save("trueshootrate-breakdown.pdf");
     } finally {
       setGenerating(false);
     }
