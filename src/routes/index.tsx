@@ -446,6 +446,25 @@ function TrueRatePage() {
             </button>
           </div>
 
+          {/* Live preview of exactly what gets shared. */}
+          <div className="rounded-md border border-dashed border-border p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Preview of the image you'll share
+            </p>
+            <div className="mt-3 overflow-hidden rounded-md">
+              <div style={{ zoom: 0.55 }}>
+                <VerdictCard
+                  results={results}
+                  fee={input.fee}
+                  shootsPerYear={input.shootsPerYear}
+                  hideFee={!showFeeOnCard}
+                />
+              </div>
+            </div>
+          </div>
+
+
+
           <button
             type="button"
             onClick={handleShare}
