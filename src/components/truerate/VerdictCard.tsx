@@ -92,8 +92,9 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
         ) : null}
 
         <p className="mt-7 max-w-md text-lg font-medium leading-snug sm:text-xl">
-          {verdictLine(results, fee)}
+          {verdictLine(results, fee, hideFee)}
         </p>
+
 
         <p className={`mt-4 text-sm ${style.sub}`}>
           True margin: {results.marginPct === null ? "—" : `${Math.round(results.marginPct)}%`} ·{" "}
