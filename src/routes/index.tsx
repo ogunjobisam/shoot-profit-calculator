@@ -487,52 +487,55 @@ function TrueRatePage() {
             </button>
           </div>
 
-          {/* Live preview of exactly what gets shared. */}
+          {/* Live preview of exactly what gets shared (4:5 feed frame). */}
           <div className="rounded-md border border-dashed border-border p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Preview of the image you'll share
+              Preview of the image you'll share · 1080 × 1350
             </p>
-            <div className="mt-3 overflow-hidden rounded-md">
-              <div style={{ zoom: 0.55 }}>
-                <VerdictCard
-                  results={results}
-                  fee={input.fee}
-                  shootsPerYear={input.shootsPerYear}
-                  hideFee={!showFeeOnCard}
-                />
+            <div className="mt-3 flex justify-center">
+              <div
+                className="overflow-hidden rounded-md"
+                style={{ width: 1080 * 0.26, height: 1350 * 0.26 }}
+              >
+                <div style={{ transform: "scale(0.26)", transformOrigin: "top left" }}>
+                  <ShareFrame variant="feed" band={results.band}>
+                    <VerdictCard
+                      results={results}
+                      fee={input.fee}
+                      shootsPerYear={input.shootsPerYear}
+                      hideFee={!showFeeOnCard}
+                    />
+                  </ShareFrame>
+                </div>
               </div>
             </div>
           </div>
 
-
-
           <button
             type="button"
-            onClick={handleShare}
+            onClick={() => void handleShare("feed")}
             className="w-full rounded-md border border-primary px-5 py-4 text-base font-semibold transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             Share this verdict
           </button>
 
-          <div className="-mt-4 grid grid-cols-2 gap-3">
+          <div className="-mt-4 flex flex-col items-center gap-2">
             <button
               type="button"
-              onClick={() => void handleDownloadImage(false)}
-              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              onClick={() => void handleShare("story")}
+              className="text-sm font-semibold text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
             >
-              Download PNG
+              Get the Story size (9:16)
             </button>
             <button
               type="button"
-              onClick={() => void handleDownloadImage(true)}
-              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              onClick={() => void handleDownloadImage("feed")}
+              className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
             >
-              Download HD PNG
+              Download PNG (1080 × 1350)
             </button>
           </div>
-          <p className="-mt-6 text-xs text-muted-foreground">
-            HD renders at 4x for crisp text on Instagram, TikTok and LinkedIn.
-          </p>
+
 
 
           <div className="rounded-md border border-border bg-card p-6">
