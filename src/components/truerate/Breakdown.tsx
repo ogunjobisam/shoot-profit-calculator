@@ -1,9 +1,11 @@
 import { useState } from "react";
 import {
+  annualLine,
   bandLabel,
   hours,
   money,
   rate,
+  salaryLine,
   verdictLine,
   type TrueRateInputs,
   type TrueRateResults,
@@ -94,7 +96,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       let y = M;
 
       // ---------- HERO ----------
-      const heroH = results.paidToWork ? 172 : 186;
+      const heroH = results.paidToWork ? 182 : 196;
       doc.setFillColor(bandRgb[0], bandRgb[1], bandRgb[2]);
       doc.roundedRect(M, y, W, heroH, 12, 12, "F");
 
@@ -142,7 +144,10 @@ export function Breakdown({ input, results }: BreakdownProps) {
         hy,
       );
 
-      y += heroH + 34;
+      hy += 13;
+      doc.text(annualLine(results, input.shootsPerYear), hx, hy);
+
+      y += heroH + 26;
 
       // ---------- table helpers ----------
       const sectionHeading = (text: string) => {
@@ -154,7 +159,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
         doc.setDrawColor(INK[0], INK[1], INK[2]);
         doc.setLineWidth(2);
         doc.line(M, y, RIGHT, y);
-        y += 20;
+        y += 17;
       };
 
       const row = (label: string, value: string, strong = false) => {
@@ -163,7 +168,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
         doc.setTextColor(strong ? INK[0] : 68, strong ? INK[1] : 64, strong ? INK[2] : 60);
         doc.text(label, M, y);
         doc.text(value, RIGHT, y, { align: "right" });
-        y += 18;
+        y += 16;
       };
 
       const thinRule = () => {
@@ -171,7 +176,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
         doc.setDrawColor(214, 211, 205);
         doc.setLineWidth(0.7);
         doc.line(M, y, RIGHT, y);
-        y += 18;
+        y += 16;
       };
 
       const hrs = (n: number) => `${hours(n)} ${n === 1 ? "hr" : "hrs"}`;
@@ -192,7 +197,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       thinRule();
       row("Total real costs", money(results.trueCost), true);
 
-      y += 16;
+      y += 10;
 
       // ---------- HOURS ----------
       sectionHeading("Where the hours went");
@@ -200,7 +205,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       thinRule();
       row(`Total · ${hrs(results.totalHours)}`, money(results.netEarnings), true);
 
-      y += 12;
+      y += 8;
 
       // ---------- TEASER ----------
       doc.setFont("helvetica", "bold");
@@ -213,6 +218,18 @@ export function Breakdown({ input, results }: BreakdownProps) {
         M,
         y,
       );
+
+      // ---------- SALARY EQUIVALENT ----------
+      const salaryText = salaryLine(results);
+      if (salaryText) {
+        y += 24;
+        sectionHeading("What this equals as a salary");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10.5);
+        doc.setTextColor(68, 64, 60);
+        const salaryLines = doc.splitTextToSize(salaryText, W);
+        doc.text(salaryLines, M, y);
+      }
 
       // ---------- QUOTE BLOCK ----------
       const quoteH = input.vatRegistered ? 132 : 112;
@@ -317,6 +334,15 @@ export function Breakdown({ input, results }: BreakdownProps) {
           <Row label={`Total · ${hours(results.totalHours)} hrs`} value={money(results.netEarnings)} strong />
         </div>
       </section>
+
+      {salaryLine(results) ? (
+        <section>
+          <h3 className="font-display text-2xl">What this equals as a salary</h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {salaryLine(results)}
+          </p>
+        </section>
+      ) : null}
 
       <section>
         <h3 className="font-display text-2xl">What a 10% price rise does</h3>
