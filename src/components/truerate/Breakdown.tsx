@@ -14,6 +14,7 @@ import {
 interface BreakdownProps {
   input: TrueRateInputs;
   results: TrueRateResults;
+  showFee?: boolean;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
