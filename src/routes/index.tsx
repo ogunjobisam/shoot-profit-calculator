@@ -498,13 +498,25 @@ function TrueRatePage() {
             Share this verdict
           </button>
 
-          <button
-            type="button"
-            onClick={handleDownloadImage}
-            className="-mt-4 w-full rounded-md border border-border px-5 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
-          >
-            Download image (PNG)
-          </button>
+          <div className="-mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => void handleDownloadImage(false)}
+              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            >
+              Download PNG
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDownloadImage(true)}
+              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            >
+              Download HD PNG
+            </button>
+          </div>
+          <p className="-mt-6 text-xs text-muted-foreground">
+            HD renders at 4x for crisp text on Instagram, TikTok and LinkedIn.
+          </p>
 
 
           <div className="rounded-md border border-border bg-card p-6">
