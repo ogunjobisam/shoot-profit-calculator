@@ -73,7 +73,7 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
           style={{ borderColor: "currentColor" }}
         >
           <span className="font-display text-base tracking-tight">TrueRate</span>
-          <span className="tracking-wide">truerate.uk</span>
+          <span className="tracking-wide">trueshootrate.app</span>
         </div>
       </div>
     );

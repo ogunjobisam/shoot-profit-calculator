@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
   component: TrueRatePage,
   head: () => ({
     meta: [
-      { title: "TrueRate — What did you actually earn per hour on your last shoot?" },
+      { title: "TrueShootRate — What did you actually earn per hour on your last shoot?" },
       {
         name: "description",
         content:
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "TrueRate — What did you actually earn per hour on your last shoot?",
+        content: "TrueShootRate — What did you actually earn per hour on your last shoot?",
       },
       {
         property: "og:description",
@@ -76,14 +76,14 @@ function TrueRatePage() {
       const blob = await toBlob(cardRef.current, { pixelRatio: 2, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
 
-      const file = new File([blob], "truerate.png", { type: "image/png" });
+      const file = new File([blob], "trueshootrate.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "TrueRate" });
+        await navigator.share({ files: [file], title: "TrueShootRate" });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "truerate.png";
+        a.download = "trueshootrate.png";
         a.click();
         URL.revokeObjectURL(url);
         toast.success("Verdict card saved as an image.");
