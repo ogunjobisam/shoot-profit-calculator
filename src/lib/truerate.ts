@@ -94,11 +94,20 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
   const overheadPerShoot =
     input.shootsPerYear > 0
       ? round2(
-          (input.gearAnnual + input.softwareAnnual + input.insuranceAnnual) / input.shootsPerYear,
+          (input.gearAnnual +
+            input.softwareAnnual +
+            input.insuranceAnnual +
+            input.marketingAnnual +
+            input.studioAnnual) /
+            input.shootsPerYear,
         )
       : 0;
 
-  const directCosts = round2(input.travelCost + input.secondShooter + input.otherCosts);
+  const cardFee = input.cardPayment ? round2(input.fee * CARD_FEE_RATE) : 0;
+
+  const directCosts = round2(
+    input.travelCost + input.secondShooter + input.otherCosts + cardFee,
+  );
   const trueCost = round2(directCosts + overheadPerShoot);
   const netEarnings = round2(input.fee - trueCost);
 
