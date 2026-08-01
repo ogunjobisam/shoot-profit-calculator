@@ -291,7 +291,7 @@ function TrueRatePage() {
           <NumberField
             id="other-costs"
             label="Other direct costs (£)"
-            helper="Prints, albums, rentals, meals."
+            helper="Prints, albums, outsourced editing, permits, rentals, meals."
             prefix="£"
             value={input.otherCosts}
             onChange={set("otherCosts")}
