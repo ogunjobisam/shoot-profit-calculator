@@ -182,6 +182,9 @@ export function Breakdown({ input, results }: BreakdownProps) {
       row("Travel", `- ${money(input.travelCost)}`);
       row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
       row("Other direct costs", `- ${money(input.otherCosts)}`);
+      if (input.cardPayment) {
+        row("Card & platform fees (est. 2%)", `- ${money(results.cardFee)}`);
+      }
       row(
         `Overheads (1/${input.shootsPerYear} of your year)`,
         `- ${money(results.overheadPerShoot)}`,
@@ -285,6 +288,9 @@ export function Breakdown({ input, results }: BreakdownProps) {
           <Row label="Travel" value={`− ${money(input.travelCost)}`} />
           <Row label="Second shooter / assistant" value={`− ${money(input.secondShooter)}`} />
           <Row label="Other direct costs" value={`− ${money(input.otherCosts)}`} />
+          {input.cardPayment ? (
+            <Row label="Card & platform fees (est. 2%)" value={`− ${money(results.cardFee)}`} />
+          ) : null}
           <Row
             label={`Overheads (1/${input.shootsPerYear} of your year)`}
             value={`− ${money(results.overheadPerShoot)}`}

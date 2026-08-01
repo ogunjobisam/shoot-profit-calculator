@@ -7,6 +7,11 @@ export const PROFESSIONAL_RATE = 35;
 
 export const VAT_RATE = 0.2;
 
+// HMRC approved mileage rate (pence per mile, first 10k miles) — re-check each April.
+export const HMRC_MILEAGE_PENCE = 55;
+
+export const CARD_FEE_RATE = 0.02;
+
 export type Band = "red" | "amber" | "green";
 
 export interface TrueRateInputs {
@@ -19,9 +24,12 @@ export interface TrueRateInputs {
   travelCost: number;
   secondShooter: number;
   otherCosts: number;
+  cardPayment: boolean;
   gearAnnual: number;
   softwareAnnual: number;
   insuranceAnnual: number;
+  marketingAnnual: number;
+  studioAnnual: number;
   shootsPerYear: number;
   targetRate: number;
 }
@@ -36,9 +44,12 @@ export const DEFAULT_INPUTS: TrueRateInputs = {
   travelCost: 25,
   secondShooter: 0,
   otherCosts: 0,
+  cardPayment: false,
   gearAnnual: 2000,
   softwareAnnual: 600,
   insuranceAnnual: 900,
+  marketingAnnual: 500,
+  studioAnnual: 0,
   shootsPerYear: 30,
   targetRate: 50,
 };
@@ -47,6 +58,7 @@ export interface TrueRateResults {
   totalHours: number;
   overheadPerShoot: number;
   directCosts: number;
+  cardFee: number;
   trueCost: number;
   netEarnings: number;
   trueHourlyRate: number | null;
@@ -82,11 +94,20 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
   const overheadPerShoot =
     input.shootsPerYear > 0
       ? round2(
-          (input.gearAnnual + input.softwareAnnual + input.insuranceAnnual) / input.shootsPerYear,
+          (input.gearAnnual +
+            input.softwareAnnual +
+            input.insuranceAnnual +
+            input.marketingAnnual +
+            input.studioAnnual) /
+            input.shootsPerYear,
         )
       : 0;
 
-  const directCosts = round2(input.travelCost + input.secondShooter + input.otherCosts);
+  const cardFee = input.cardPayment ? round2(input.fee * CARD_FEE_RATE) : 0;
+
+  const directCosts = round2(
+    input.travelCost + input.secondShooter + input.otherCosts + cardFee,
+  );
   const trueCost = round2(directCosts + overheadPerShoot);
   const netEarnings = round2(input.fee - trueCost);
 
@@ -102,6 +123,7 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
     totalHours,
     overheadPerShoot,
     directCosts,
+    cardFee,
     trueCost,
     netEarnings,
     trueHourlyRate,

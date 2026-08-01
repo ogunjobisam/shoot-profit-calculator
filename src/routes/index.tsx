@@ -5,7 +5,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
-import { calculate, DEFAULT_INPUTS, money, rate, type TrueRateInputs } from "@/lib/truerate";
+import {
+  calculate,
+  DEFAULT_INPUTS,
+  HMRC_MILEAGE_PENCE,
+  money,
+  rate,
+  type TrueRateInputs,
+} from "@/lib/truerate";
 import { captureEmail, trackEvent } from "@/lib/track";
 
 export const Route = createFileRoute("/")({
@@ -201,6 +208,33 @@ function TrueRatePage() {
             ) : null}
           </div>
 
+          <div className="rounded-md border border-border bg-card p-4">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm font-semibold">Paid by card or online?</span>
+              <div className="flex overflow-hidden rounded-md border border-border">
+                {[false, true].map((v) => (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => set("cardPayment")(v)}
+                    className={`px-5 py-2 text-sm font-medium transition-colors ${
+                      input.cardPayment === v
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground"
+                    }`}
+                  >
+                    {v ? "Yes" : "No"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {input.cardPayment ? (
+              <p className="mt-3 text-xs leading-snug text-muted-foreground">
+                We add an estimated 2% card &amp; platform fee to your direct costs.
+              </p>
+            ) : null}
+          </div>
+
           <NumberField
             id="shooting"
             label="Hours shooting"
@@ -242,7 +276,7 @@ function TrueRatePage() {
           <NumberField
             id="travel-cost"
             label="Travel cost (£)"
-            helper="Fuel, trains, parking."
+            helper={`Driving? Count ${HMRC_MILEAGE_PENCE}p a mile (HMRC's rate) — fuel alone misses wear, tyres and insurance.`}
             prefix="£"
             value={input.travelCost}
             onChange={set("travelCost")}
@@ -257,7 +291,7 @@ function TrueRatePage() {
           <NumberField
             id="other-costs"
             label="Other direct costs (£)"
-            helper="Prints, albums, rentals, meals."
+            helper="Prints, albums, outsourced editing, permits, rentals, meals."
             prefix="£"
             value={input.otherCosts}
             onChange={set("otherCosts")}
@@ -293,10 +327,27 @@ function TrueRatePage() {
               />
               <NumberField
                 id="insurance"
-                label="Annual insurance, accounting & misc business costs (£/yr)"
+                label="Insurance, accounting, memberships & training (£/yr)"
+                helper="PLI, kit cover, accountant, BIPP/SWPP, workshops."
                 prefix="£"
                 value={input.insuranceAnnual}
                 onChange={set("insuranceAnnual")}
+              />
+              <NumberField
+                id="marketing"
+                label="Marketing, website & galleries (£/yr)"
+                helper="Ads, website hosting, domain, gallery platform, portfolio tools."
+                prefix="£"
+                value={input.marketingAnnual}
+                onChange={set("marketingAnnual")}
+              />
+              <NumberField
+                id="studio"
+                label="Studio, storage & workspace (£/yr)"
+                helper="Studio hire, kit storage, or a fair share of your home office."
+                prefix="£"
+                value={input.studioAnnual}
+                onChange={set("studioAnnual")}
               />
               <NumberField
                 id="shoots"
@@ -306,6 +357,9 @@ function TrueRatePage() {
               />
             </div>
           ) : null}
+          <p className="mt-4 text-xs leading-snug text-muted-foreground">
+            Categories mirror what UK photographers can claim as business expenses.
+          </p>
         </section>
 
         <section className="space-y-5">
