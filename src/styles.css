@@ -19,7 +19,17 @@
  */
 
 @theme inline {
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-band-red: var(--band-red);
+  --color-band-red-foreground: var(--band-red-foreground);
+  --color-band-amber: var(--band-amber);
+  --color-band-amber-foreground: var(--band-amber-foreground);
+  --color-band-green: var(--band-green);
+  --color-band-green-foreground: var(--band-green-foreground);
+  --color-ink: var(--ink);
   --radius-sm: calc(var(--radius) - 4px);
+
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
