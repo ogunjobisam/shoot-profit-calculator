@@ -182,6 +182,9 @@ export function Breakdown({ input, results }: BreakdownProps) {
       row("Travel", `- ${money(input.travelCost)}`);
       row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
       row("Other direct costs", `- ${money(input.otherCosts)}`);
+      if (input.cardPayment) {
+        row("Card & platform fees (est. 2%)", `- ${money(results.cardFee)}`);
+      }
       row(
         `Overheads (1/${input.shootsPerYear} of your year)`,
         `- ${money(results.overheadPerShoot)}`,
