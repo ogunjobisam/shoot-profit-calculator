@@ -43,6 +43,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+const CHIP_STYLES: Record<"red" | "amber" | "green", string> = {
+  red: "bg-band-red text-band-red-foreground",
+  amber: "bg-band-amber text-band-amber-foreground",
+  green: "bg-band-green text-band-green-foreground",
+};
+
 function TrueRatePage() {
   const [input, setInput] = useState<TrueRateInputs>(DEFAULT_INPUTS);
   const [overheadsOpen, setOverheadsOpen] = useState(false);
@@ -58,6 +64,15 @@ function TrueRatePage() {
   const set = <K extends keyof TrueRateInputs>(key: K) => (value: TrueRateInputs[K]) =>
     setInput((prev) => ({ ...prev, [key]: value }));
 
+  // Restore a previous unlock (client-only, after hydration).
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("tsr_unlocked") === "1") setUnlocked(true);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
   // Fire "calculated" once per session, after the fee settles.
   useEffect(() => {
     if (!hasResults || trackedRef.current) return;
@@ -68,6 +83,7 @@ function TrueRatePage() {
     }, 1200);
     return () => clearTimeout(t);
   }, [hasResults, results.band]);
+
 
   async function handleShare() {
     if (!cardRef.current) return;
