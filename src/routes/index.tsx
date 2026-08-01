@@ -269,7 +269,7 @@ function TrueRatePage() {
           <NumberField
             id="travel-cost"
             label="Travel cost (£)"
-            helper="Fuel, trains, parking."
+            helper={`Driving? Count ${HMRC_MILEAGE_PENCE}p a mile (HMRC's rate) — fuel alone misses wear, tyres and insurance.`}
             prefix="£"
             value={input.travelCost}
             onChange={set("travelCost")}
