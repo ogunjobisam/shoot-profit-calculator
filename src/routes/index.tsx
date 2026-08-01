@@ -71,6 +71,7 @@ function TrueRatePage() {
 
   async function handleShare() {
     if (!cardRef.current) return;
+    const shareUrl = "https://trueshootrate.app/";
     try {
       const { toBlob } = await import("html-to-image");
       const blob = await toBlob(cardRef.current, { pixelRatio: 2, cacheBust: true });
@@ -78,7 +79,7 @@ function TrueRatePage() {
 
       const file = new File([blob], "trueshootrate.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "TrueShootRate" });
+        await navigator.share({ files: [file], title: "TrueShootRate", text: shareUrl });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -88,6 +89,14 @@ function TrueRatePage() {
         URL.revokeObjectURL(url);
         toast.success("Verdict card saved as an image.");
       }
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link copied", { description: shareUrl });
+      } catch {
+        toast.info("Share link", { description: shareUrl });
+      }
+
       void trackEvent("shared", results.band);
     } catch {
       toast.error("Couldn't create the image. Try again.");
