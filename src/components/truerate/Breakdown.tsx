@@ -14,6 +14,7 @@ import {
 interface BreakdownProps {
   input: TrueRateInputs;
   results: TrueRateResults;
+  showFee?: boolean;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
@@ -29,7 +30,7 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   );
 }
 
-export function Breakdown({ input, results }: BreakdownProps) {
+export function Breakdown({ input, results, showFee = false }: BreakdownProps) {
   const [generating, setGenerating] = useState(false);
 
   const hourRows = [
@@ -128,7 +129,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       hy += 30;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      const verdict = doc.splitTextToSize(verdictLine(results, input.fee), W - 56);
+      const verdict = doc.splitTextToSize(verdictLine(results, input.fee, !showFee), W - 56);
       doc.text(verdict, hx, hy);
       hy += verdict.length * 16 + 6;
 
@@ -183,7 +184,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
 
       // ---------- MONEY ----------
       sectionHeading("Where the money went");
-      row("Shoot fee (ex VAT)", money(input.fee));
+      row("Shoot fee (ex VAT)", showFee ? money(input.fee) : "hidden");
       row("Travel", `- ${money(input.travelCost)}`);
       row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
       row("Other direct costs", `- ${money(input.otherCosts)}`);
@@ -212,9 +213,13 @@ export function Breakdown({ input, results }: BreakdownProps) {
       doc.setFontSize(10);
       doc.setTextColor(bandRgb[0], bandRgb[1], bandRgb[2]);
       doc.text(
-        `If you'd charged 10% more: ${money(raisedFee)} -> ${rate(
-          raisedRate,
-        )}/hr · ${Math.round(raisedMargin)}% margin`,
+        showFee
+          ? `If you'd charged 10% more: ${money(raisedFee)} -> ${rate(
+              raisedRate,
+            )}/hr · ${Math.round(raisedMargin)}% margin`
+          : `If you'd charged 10% more: ${rate(raisedRate)}/hr · ${Math.round(
+              raisedMargin,
+            )}% margin`,
         M,
         y,
       );
