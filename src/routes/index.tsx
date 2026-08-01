@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
-import { calculate, DEFAULT_INPUTS, money, type TrueRateInputs } from "@/lib/truerate";
+import { calculate, DEFAULT_INPUTS, money, rate, type TrueRateInputs } from "@/lib/truerate";
 import { captureEmail, trackEvent } from "@/lib/track";
 
 export const Route = createFileRoute("/")({
