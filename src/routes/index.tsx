@@ -83,18 +83,21 @@ function TrueRatePage() {
     }
   }, []);
 
-  // Remember the fee-on-card choice for the rest of this visit.
+  // Remember the fee-on-card choice on this device (persists across visits).
+  const feePrefLoaded = useRef(false);
   useEffect(() => {
     try {
-      if (window.sessionStorage.getItem("tsr_show_fee") === "1") setShowFeeOnCard(true);
+      if (window.localStorage.getItem("tsr_show_fee") === "1") setShowFeeOnCard(true);
     } catch {
       /* storage unavailable */
     }
+    feePrefLoaded.current = true;
   }, []);
 
   useEffect(() => {
+    if (!feePrefLoaded.current) return;
     try {
-      window.sessionStorage.setItem("tsr_show_fee", showFeeOnCard ? "1" : "0");
+      window.localStorage.setItem("tsr_show_fee", showFeeOnCard ? "1" : "0");
     } catch {
       /* storage unavailable */
     }
