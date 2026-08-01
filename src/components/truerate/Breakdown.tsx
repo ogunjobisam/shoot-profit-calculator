@@ -94,7 +94,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       let y = M;
 
       // ---------- HERO ----------
-      const heroH = 250;
+      const heroH = results.paidToWork ? 190 : 205;
       doc.setFillColor(bandRgb[0], bandRgb[1], bandRgb[2]);
       doc.roundedRect(M, y, W, heroH, 12, 12, "F");
 
@@ -105,7 +105,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       doc.setFontSize(9);
       doc.text(BAND_LABEL[results.band].toUpperCase(), hx, hy, { charSpace: 1.6 });
 
-      hy += 66;
+      hy += 58;
       doc.setFont(display, displayStyle);
       doc.setFontSize(results.paidToWork ? 38 : 64);
       doc.text(
@@ -123,12 +123,12 @@ export function Breakdown({ input, results }: BreakdownProps) {
         doc.text("per hour, all in", hx, hy);
       }
 
-      hy += 34;
+      hy += 30;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       const verdict = doc.splitTextToSize(verdictLine(results, input.fee), W - 56);
       doc.text(verdict, hx, hy);
-      hy += verdict.length * 17 + 8;
+      hy += verdict.length * 16 + 6;
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
@@ -142,7 +142,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
         hy,
       );
 
-      y += heroH + 36;
+      y += heroH + 34;
 
       // ---------- table helpers ----------
       const sectionHeading = (text: string) => {
@@ -163,15 +163,15 @@ export function Breakdown({ input, results }: BreakdownProps) {
         doc.setTextColor(strong ? INK[0] : 68, strong ? INK[1] : 64, strong ? INK[2] : 60);
         doc.text(label, M, y);
         doc.text(value, RIGHT, y, { align: "right" });
-        y += 20;
+        y += 18;
       };
 
       const thinRule = () => {
-        y -= 8;
+        y -= 7;
         doc.setDrawColor(214, 211, 205);
         doc.setLineWidth(0.7);
         doc.line(M, y, RIGHT, y);
-        y += 20;
+        y += 18;
       };
 
       const hrs = (n: number) => `${hours(n)} ${n === 1 ? "hr" : "hrs"}`;
@@ -179,17 +179,17 @@ export function Breakdown({ input, results }: BreakdownProps) {
       // ---------- MONEY ----------
       sectionHeading("Where the money went");
       row("Shoot fee (ex VAT)", money(input.fee));
-      row("Travel", `− ${money(input.travelCost)}`);
-      row("Second shooter / assistant", `− ${money(input.secondShooter)}`);
-      row("Other direct costs", `− ${money(input.otherCosts)}`);
+      row("Travel", `- ${money(input.travelCost)}`);
+      row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
+      row("Other direct costs", `- ${money(input.otherCosts)}`);
       row(
         `Overheads (1/${input.shootsPerYear} of your year)`,
-        `− ${money(results.overheadPerShoot)}`,
+        `- ${money(results.overheadPerShoot)}`,
       );
       thinRule();
       row("Total real costs", money(results.trueCost), true);
 
-      y += 18;
+      y += 16;
 
       // ---------- HOURS ----------
       sectionHeading("Where the hours went");
@@ -197,14 +197,14 @@ export function Breakdown({ input, results }: BreakdownProps) {
       thinRule();
       row(`Total · ${hrs(results.totalHours)}`, money(results.netEarnings), true);
 
-      y += 14;
+      y += 12;
 
       // ---------- TEASER ----------
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(bandRgb[0], bandRgb[1], bandRgb[2]);
       doc.text(
-        `If you'd charged 10% more: ${money(raisedFee)} → ${rate(
+        `If you'd charged 10% more: ${money(raisedFee)} -> ${rate(
           raisedRate,
         )}/hr · ${Math.round(raisedMargin)}% margin`,
         M,
@@ -282,12 +282,12 @@ export function Breakdown({ input, results }: BreakdownProps) {
         <h3 className="font-display text-2xl">Where the money went</h3>
         <div className="mt-3">
           <Row label="Shoot fee (ex VAT)" value={money(input.fee)} strong />
-          <Row label="Travel" value={`− ${money(input.travelCost)}`} />
-          <Row label="Second shooter / assistant" value={`− ${money(input.secondShooter)}`} />
-          <Row label="Other direct costs" value={`− ${money(input.otherCosts)}`} />
+          <Row label="Travel" value={`- ${money(input.travelCost)}`} />
+          <Row label="Second shooter / assistant" value={`- ${money(input.secondShooter)}`} />
+          <Row label="Other direct costs" value={`- ${money(input.otherCosts)}`} />
           <Row
             label={`Overheads (1/${input.shootsPerYear} of your year)`}
-            value={`− ${money(results.overheadPerShoot)}`}
+            value={`- ${money(results.overheadPerShoot)}`}
           />
           <Row label="Net earnings" value={money(results.netEarnings)} strong />
         </div>
