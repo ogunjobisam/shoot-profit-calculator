@@ -58,6 +58,7 @@ export interface TrueRateResults {
   totalHours: number;
   overheadPerShoot: number;
   directCosts: number;
+  cardFee: number;
   trueCost: number;
   netEarnings: number;
   trueHourlyRate: number | null;
