@@ -327,10 +327,27 @@ function TrueRatePage() {
               />
               <NumberField
                 id="insurance"
-                label="Annual insurance, accounting & misc business costs (£/yr)"
+                label="Insurance, accounting, memberships & training (£/yr)"
+                helper="PLI, kit cover, accountant, BIPP/SWPP, workshops."
                 prefix="£"
                 value={input.insuranceAnnual}
                 onChange={set("insuranceAnnual")}
+              />
+              <NumberField
+                id="marketing"
+                label="Marketing, website & galleries (£/yr)"
+                helper="Ads, website hosting, domain, gallery platform, portfolio tools."
+                prefix="£"
+                value={input.marketingAnnual}
+                onChange={set("marketingAnnual")}
+              />
+              <NumberField
+                id="studio"
+                label="Studio, storage & workspace (£/yr)"
+                helper="Studio hire, kit storage, or a fair share of your home office."
+                prefix="£"
+                value={input.studioAnnual}
+                onChange={set("studioAnnual")}
               />
               <NumberField
                 id="shoots"
@@ -340,6 +357,9 @@ function TrueRatePage() {
               />
             </div>
           ) : null}
+          <p className="mt-4 text-xs leading-snug text-muted-foreground">
+            Categories mirror what UK photographers can claim as business expenses.
+          </p>
         </section>
 
         <section className="space-y-5">
