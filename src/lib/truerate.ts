@@ -7,6 +7,11 @@ export const PROFESSIONAL_RATE = 35;
 
 export const VAT_RATE = 0.2;
 
+// HMRC approved mileage rate (pence per mile, first 10k miles) — re-check each April.
+export const HMRC_MILEAGE_PENCE = 55;
+
+export const CARD_FEE_RATE = 0.02;
+
 export type Band = "red" | "amber" | "green";
 
 export interface TrueRateInputs {
