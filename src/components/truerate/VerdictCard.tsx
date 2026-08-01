@@ -62,7 +62,8 @@ function useAnimatedNumber(target: number, duration = 400) {
 }
 
 export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
-  ({ results, fee, shootsPerYear }, ref) => {
+  ({ results, fee, shootsPerYear, hideFee = false }, ref) => {
+
     const style = BAND_STYLES[results.band];
     const animatedRate = useAnimatedNumber(results.trueHourlyRate ?? 0);
     const bigNumber =
