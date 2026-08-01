@@ -151,25 +151,28 @@ function TrueRatePage() {
     }
   }
 
-  async function handleDownloadImage() {
+  async function handleDownloadImage(hd = false) {
     const node = showFeeOnCard ? cardRef.current : exportRef.current;
     if (!node) return;
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: hd ? 4 : 2, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "trueshootrate.png";
+      a.download = hd ? "trueshootrate-hd.png" : "trueshootrate.png";
       a.click();
       URL.revokeObjectURL(url);
-      toast.success("Verdict card saved as an image.");
+      toast.success(
+        hd ? "High-resolution card saved (4x)." : "Verdict card saved as an image.",
+      );
       void trackEvent("shared", results.band);
     } catch {
       toast.error("Couldn't create the image. Try again.");
     }
   }
+
 
 
 
@@ -495,13 +498,25 @@ function TrueRatePage() {
             Share this verdict
           </button>
 
-          <button
-            type="button"
-            onClick={handleDownloadImage}
-            className="-mt-4 w-full rounded-md border border-border px-5 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
-          >
-            Download image (PNG)
-          </button>
+          <div className="-mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => void handleDownloadImage(false)}
+              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            >
+              Download PNG
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDownloadImage(true)}
+              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            >
+              Download HD PNG
+            </button>
+          </div>
+          <p className="-mt-6 text-xs text-muted-foreground">
+            HD renders at 4x for crisp text on Instagram, TikTok and LinkedIn.
+          </p>
 
 
           <div className="rounded-md border border-border bg-card p-6">
