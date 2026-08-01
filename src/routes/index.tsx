@@ -96,12 +96,14 @@ function TrueRatePage() {
 
 
   async function handleShare() {
-    if (!cardRef.current) return;
+    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+    if (!node) return;
     const shareUrl = "https://trueshootrate.app/";
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(cardRef.current, { pixelRatio: 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
+
 
       const file = new File([blob], "trueshootrate.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
