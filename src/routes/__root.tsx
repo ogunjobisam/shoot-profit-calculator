@@ -80,6 +80,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "TrueRate" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { title: "TrueRate — What did you actually earn per hour on your last shoot?" },
+      { property: "og:title", content: "TrueRate — What did you actually earn per hour on your last shoot?" },
+      { name: "twitter:title", content: "TrueRate — What did you actually earn per hour on your last shoot?" },
+      { name: "description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
+      { property: "og:description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
+      { name: "twitter:description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/fb1e5800-04e8-4fb1-8665-bc6cf662e567" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/fb1e5800-04e8-4fb1-8665-bc6cf662e567" },
     ],
     links: [
       {

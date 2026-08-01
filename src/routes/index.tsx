@@ -20,12 +20,12 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "TrueRate — your real hourly rate as a photographer",
+        content: "TrueRate — What did you actually earn per hour on your last shoot?",
       },
       {
         property: "og:description",
         content:
-          "Two minutes. Real numbers. No sugar-coating. Find out what your last shoot actually paid you per hour.",
+          "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
