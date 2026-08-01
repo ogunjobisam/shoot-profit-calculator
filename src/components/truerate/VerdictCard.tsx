@@ -31,7 +31,9 @@ interface VerdictCardProps {
   results: TrueRateResults;
   fee: number;
   shootsPerYear: number;
+  hideFee?: boolean;
 }
+
 
 // Eases a numeric value towards its target over ~400ms.
 function useAnimatedNumber(target: number, duration = 400) {
