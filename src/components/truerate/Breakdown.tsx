@@ -185,8 +185,10 @@ export function Breakdown({ input, results, pdfShowFee = false }: BreakdownProps
       const hrs = (n: number) => `${hours(n)} ${n === 1 ? "hr" : "hrs"}`;
 
       // ---------- MONEY ----------
-      sectionHeading("Where the money went");
-      row("Shoot fee (ex VAT)", showFee ? money(input.fee) : "hidden");
+      sectionHeading(showFee ? "Where the money went" : "Costs");
+      if (showFee) {
+        row("Shoot fee (ex VAT)", money(input.fee));
+      }
       row("Travel", `- ${money(input.travelCost)}`);
       row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
       row("Other direct costs", `- ${money(input.otherCosts)}`);
