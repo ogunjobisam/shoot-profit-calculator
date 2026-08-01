@@ -37,6 +37,7 @@ export function NumberField({
           min={0}
           placeholder={placeholder}
           value={Number.isFinite(value) && value !== 0 ? value : value === 0 ? 0 : ""}
+          onFocus={(e) => e.target.select()}
           onChange={(e) => {
             const next = e.target.value === "" ? 0 : Number(e.target.value);
             onChange(Number.isFinite(next) && next >= 0 ? next : 0);
