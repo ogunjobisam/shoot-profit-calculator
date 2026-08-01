@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
+  BAND_LABEL,
   hours,
   money,
   rate,
+  verdictLine,
   type TrueRateInputs,
   type TrueRateResults,
 } from "@/lib/truerate";
@@ -74,12 +76,12 @@ export function Breakdown({ input, results }: BreakdownProps) {
       const W = PAGE_W - M * 2;
       const RIGHT = PAGE_W - M;
 
-      const BAND: Record<string, [number, number, number]> = {
+      const BAND: Record<"red" | "amber" | "green", [number, number, number]> = {
         red: [159, 29, 29],
         amber: [217, 119, 6],
         green: [22, 101, 52],
       };
-      const bandRgb = BAND[results.band] ?? BAND.red;
+      const bandRgb: [number, number, number] = BAND[results.band] ?? [159, 29, 29];
       const INK: [number, number, number] = [28, 25, 23];
       const GREY: [number, number, number] = [120, 113, 108];
       const onBandLight = results.band === "amber";
