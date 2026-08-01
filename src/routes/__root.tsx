@@ -77,17 +77,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { property: "og:site_name", content: "TrueRate" },
+      { property: "og:site_name", content: "TrueShootRate" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { title: "TrueRate — What did you actually earn per hour on your last shoot?" },
-      { property: "og:title", content: "TrueRate — What did you actually earn per hour on your last shoot?" },
-      { name: "twitter:title", content: "TrueRate — What did you actually earn per hour on your last shoot?" },
+      { title: "TrueShootRate — What did you actually earn per hour on your last shoot?" },
+      { property: "og:title", content: "TrueShootRate — What did you actually earn per hour on your last shoot?" },
+      { name: "twitter:title", content: "TrueShootRate — What did you actually earn per hour on your last shoot?" },
       { name: "description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
       { property: "og:description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
       { name: "twitter:description", content: "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/fb1e5800-04e8-4fb1-8665-bc6cf662e567" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/fb1e5800-04e8-4fb1-8665-bc6cf662e567" },
+      { property: "og:image", content: "https://trueshootrate.app/og.png" },
+      { name: "twitter:image", content: "https://trueshootrate.app/og.png" },
     ],
     links: [
       {
@@ -100,7 +100,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
     ],
   }),
 
