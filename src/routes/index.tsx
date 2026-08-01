@@ -436,22 +436,31 @@ function TrueRatePage() {
       {hasResults ? (
         <div id="verdict" className="mt-14 space-y-8">
           <VerdictCard
-            ref={cardRef}
             results={results}
             fee={input.fee}
             shootsPerYear={input.shootsPerYear}
           />
 
-          {/* Off-screen fee-less variant used for the shared image. */}
-          <div aria-hidden className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]">
-            <VerdictCard
-              ref={exportRef}
-              results={results}
-              fee={input.fee}
-              shootsPerYear={input.shootsPerYear}
-              hideFee
-            />
+          {/* Off-screen fixed-size export frames (4:5 feed and 9:16 story). */}
+          <div aria-hidden className="pointer-events-none fixed -left-[20000px] top-0">
+            <ShareFrame ref={feedRef} variant="feed" band={results.band}>
+              <VerdictCard
+                results={results}
+                fee={input.fee}
+                shootsPerYear={input.shootsPerYear}
+                hideFee={!showFeeOnCard}
+              />
+            </ShareFrame>
+            <ShareFrame ref={storyRef} variant="story" band={results.band}>
+              <VerdictCard
+                results={results}
+                fee={input.fee}
+                shootsPerYear={input.shootsPerYear}
+                hideFee={!showFeeOnCard}
+              />
+            </ShareFrame>
           </div>
+
 
           <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card p-4">
             <div>
