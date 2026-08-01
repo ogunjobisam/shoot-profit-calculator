@@ -8,7 +8,7 @@ import {
   type TrueRateResults,
 } from "@/lib/truerate";
 
-const BAND_STYLES: Record<string, { bg: string; fg: string; sub: string }> = {
+const BAND_STYLES: Record<"red" | "amber" | "green", { bg: string; fg: string; sub: string }> = {
   red: {
     bg: "bg-band-red",
     fg: "text-band-red-foreground",
