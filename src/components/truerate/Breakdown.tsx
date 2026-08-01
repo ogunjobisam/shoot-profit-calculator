@@ -94,7 +94,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       let y = M;
 
       // ---------- HERO ----------
-      const heroH = results.paidToWork ? 190 : 205;
+      const heroH = results.paidToWork ? 172 : 186;
       doc.setFillColor(bandRgb[0], bandRgb[1], bandRgb[2]);
       doc.roundedRect(M, y, W, heroH, 12, 12, "F");
 
