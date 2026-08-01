@@ -151,6 +151,28 @@ function TrueRatePage() {
     }
   }
 
+  async function handleDownloadImage() {
+    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+    if (!node) return;
+    try {
+      const { toBlob } = await import("html-to-image");
+      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+      if (!blob) throw new Error("Could not render card");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "trueshootrate.png";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Verdict card saved as an image.");
+      void trackEvent("shared", results.band);
+    } catch {
+      toast.error("Couldn't create the image. Try again.");
+    }
+  }
+
+
+
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
