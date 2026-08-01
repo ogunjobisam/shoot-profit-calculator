@@ -71,6 +71,9 @@ export const BAND_LABEL: Record<Band, string> = {
   green: "Professional territory",
 };
 
+export const bandLabel = (res: TrueRateResults) =>
+  res.paidToWork ? "You made a loss" : BAND_LABEL[res.band];
+
 export function calculate(input: TrueRateInputs): TrueRateResults {
   const totalHours = round2(
     input.hoursShooting + input.hoursEditing + input.hoursAdmin + input.hoursTravel,
