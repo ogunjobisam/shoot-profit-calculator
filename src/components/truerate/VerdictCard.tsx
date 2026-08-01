@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import {
+  annualLine,
   bandLabel,
   hours,
   money,
@@ -29,6 +30,7 @@ const BAND_STYLES: Record<"red" | "amber" | "green", { bg: string; fg: string; s
 interface VerdictCardProps {
   results: TrueRateResults;
   fee: number;
+  shootsPerYear: number;
 }
 
 // Eases a numeric value towards its target over ~400ms.
@@ -58,7 +60,7 @@ function useAnimatedNumber(target: number, duration = 400) {
 }
 
 export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
-  ({ results, fee }, ref) => {
+  ({ results, fee, shootsPerYear }, ref) => {
     const style = BAND_STYLES[results.band];
     const animatedRate = useAnimatedNumber(results.trueHourlyRate ?? 0);
     const bigNumber =
@@ -94,6 +96,8 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
           True margin: {results.marginPct === null ? "—" : `${Math.round(results.marginPct)}%`} ·{" "}
           {hours(results.totalHours)} hours of your life · {money(results.trueCost)} real costs
         </p>
+
+        <p className={`mt-2 text-sm ${style.sub}`}>{annualLine(results, shootsPerYear)}</p>
 
         <div
           className={`mt-9 flex items-baseline justify-between border-t pt-4 text-xs ${style.sub}`}

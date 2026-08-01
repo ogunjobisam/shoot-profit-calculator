@@ -378,7 +378,12 @@ function TrueRatePage() {
 
       {hasResults ? (
         <div id="verdict" className="mt-14 space-y-8">
-          <VerdictCard ref={cardRef} results={results} fee={input.fee} />
+          <VerdictCard
+            ref={cardRef}
+            results={results}
+            fee={input.fee}
+            shootsPerYear={input.shootsPerYear}
+          />
 
           <button
             type="button"

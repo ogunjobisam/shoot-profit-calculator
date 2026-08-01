@@ -159,3 +159,26 @@ export function verdictLine(res: TrueRateResults, fee: number): string {
     return `Your ${feeText} shoot paid you ${rateText}. Skilled work, hobby money.`;
   return `Your ${feeText} shoot paid you ${rateText}. Now protect it.`;
 }
+
+// Full-time equivalent: 37.5 hrs/week × 52 weeks, rounded to nearest £1,000.
+export const FULL_TIME_HOURS_PER_YEAR = 37.5 * 52;
+
+export function salaryEquivalent(res: TrueRateResults): number | null {
+  if (res.paidToWork || res.trueHourlyRate === null) return null;
+  return Math.round((res.trueHourlyRate * FULL_TIME_HOURS_PER_YEAR) / 1000) * 1000;
+}
+
+export function salaryLine(res: TrueRateResults): string | null {
+  const salary = salaryEquivalent(res);
+  if (salary === null || res.trueHourlyRate === null) return null;
+  return `${rate(res.trueHourlyRate)}/hr is roughly a ${money(
+    salary,
+  )} full-time salary — except a salary comes with paid holiday, pension and sick pay.`;
+}
+
+export function annualLine(res: TrueRateResults, shootsPerYear: number): string {
+  const total = res.netEarnings * shootsPerYear;
+  return res.paidToWork
+    ? `A year of shoots like this loses you ${money(Math.abs(total))}`
+    : `A year of shoots like this: ${money(total)} before tax`;
+}
