@@ -282,12 +282,12 @@ export function Breakdown({ input, results }: BreakdownProps) {
         <h3 className="font-display text-2xl">Where the money went</h3>
         <div className="mt-3">
           <Row label="Shoot fee (ex VAT)" value={money(input.fee)} strong />
-          <Row label="Travel" value={`- ${money(input.travelCost)}`} />
-          <Row label="Second shooter / assistant" value={`- ${money(input.secondShooter)}`} />
-          <Row label="Other direct costs" value={`- ${money(input.otherCosts)}`} />
+          <Row label="Travel" value={`− ${money(input.travelCost)}`} />
+          <Row label="Second shooter / assistant" value={`− ${money(input.secondShooter)}`} />
+          <Row label="Other direct costs" value={`− ${money(input.otherCosts)}`} />
           <Row
             label={`Overheads (1/${input.shootsPerYear} of your year)`}
-            value={`- ${money(results.overheadPerShoot)}`}
+            value={`− ${money(results.overheadPerShoot)}`}
           />
           <Row label="Net earnings" value={money(results.netEarnings)} strong />
         </div>
