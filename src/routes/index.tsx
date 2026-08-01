@@ -115,27 +115,31 @@ function TrueRatePage() {
   }, [hasResults, results.band]);
 
 
-  async function handleShare() {
-    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+  async function handleShare(variant: "feed" | "story" = "feed") {
+    const node = variant === "story" ? storyRef.current : feedRef.current;
     if (!node) return;
     const shareUrl = "https://trueshootrate.app/";
+    const filename = variant === "story" ? "trueshootrate-story.png" : "trueshootrate.png";
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 1, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
 
-
-      const file = new File([blob], "trueshootrate.png", { type: "image/png" });
+      const file = new File([blob], filename, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: "TrueShootRate", text: shareUrl });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "trueshootrate.png";
+        a.download = filename;
         a.click();
         URL.revokeObjectURL(url);
-        toast.success("Verdict card saved as an image.");
+        toast.success(
+          variant === "story"
+            ? "Story card saved (1080x1920)."
+            : "Verdict card saved (1080x1350).",
+        );
       }
 
       try {
@@ -151,27 +155,30 @@ function TrueRatePage() {
     }
   }
 
-  async function handleDownloadImage(hd = false) {
-    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+  async function handleDownloadImage(variant: "feed" | "story" = "feed") {
+    const node = variant === "story" ? storyRef.current : feedRef.current;
     if (!node) return;
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(node, { pixelRatio: hd ? 4 : 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 1, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = hd ? "trueshootrate-hd.png" : "trueshootrate.png";
+      a.download = variant === "story" ? "trueshootrate-story.png" : "trueshootrate.png";
       a.click();
       URL.revokeObjectURL(url);
       toast.success(
-        hd ? "High-resolution card saved (4x)." : "Verdict card saved as an image.",
+        variant === "story"
+          ? "Story card saved (1080x1920)."
+          : "Verdict card saved (1080x1350).",
       );
       void trackEvent("shared", results.band);
     } catch {
       toast.error("Couldn't create the image. Try again.");
     }
   }
+
 
 
 
