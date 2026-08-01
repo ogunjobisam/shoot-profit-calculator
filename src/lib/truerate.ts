@@ -123,6 +123,7 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
     totalHours,
     overheadPerShoot,
     directCosts,
+    cardFee,
     trueCost,
     netEarnings,
     trueHourlyRate,
