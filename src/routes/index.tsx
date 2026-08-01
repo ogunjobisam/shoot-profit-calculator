@@ -83,6 +83,23 @@ function TrueRatePage() {
     }
   }, []);
 
+  // Remember the fee-on-card choice for the rest of this visit.
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem("tsr_show_fee") === "1") setShowFeeOnCard(true);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem("tsr_show_fee", showFeeOnCard ? "1" : "0");
+    } catch {
+      /* storage unavailable */
+    }
+  }, [showFeeOnCard]);
+
   // Fire "calculated" once per session, after the fee settles.
   useEffect(() => {
     if (!hasResults || trackedRef.current) return;
