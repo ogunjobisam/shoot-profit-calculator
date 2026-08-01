@@ -201,6 +201,33 @@ function TrueRatePage() {
             ) : null}
           </div>
 
+          <div className="rounded-md border border-border bg-card p-4">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm font-semibold">Paid by card or online?</span>
+              <div className="flex overflow-hidden rounded-md border border-border">
+                {[false, true].map((v) => (
+                  <button
+                    key={String(v)}
+                    type="button"
+                    onClick={() => set("cardPayment")(v)}
+                    className={`px-5 py-2 text-sm font-medium transition-colors ${
+                      input.cardPayment === v
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground"
+                    }`}
+                  >
+                    {v ? "Yes" : "No"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {input.cardPayment ? (
+              <p className="mt-3 text-xs leading-snug text-muted-foreground">
+                We add an estimated 2% card &amp; platform fee to your direct costs.
+              </p>
+            ) : null}
+          </div>
+
           <NumberField
             id="shooting"
             label="Hours shooting"
