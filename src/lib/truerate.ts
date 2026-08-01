@@ -24,9 +24,12 @@ export interface TrueRateInputs {
   travelCost: number;
   secondShooter: number;
   otherCosts: number;
+  cardPayment: boolean;
   gearAnnual: number;
   softwareAnnual: number;
   insuranceAnnual: number;
+  marketingAnnual: number;
+  studioAnnual: number;
   shootsPerYear: number;
   targetRate: number;
 }
