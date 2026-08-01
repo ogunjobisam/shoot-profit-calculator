@@ -44,9 +44,12 @@ export const DEFAULT_INPUTS: TrueRateInputs = {
   travelCost: 25,
   secondShooter: 0,
   otherCosts: 0,
+  cardPayment: false,
   gearAnnual: 2000,
   softwareAnnual: 600,
   insuranceAnnual: 900,
+  marketingAnnual: 500,
+  studioAnnual: 0,
   shootsPerYear: 30,
   targetRate: 50,
 };
