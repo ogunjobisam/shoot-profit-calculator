@@ -388,6 +388,28 @@ function TrueRatePage() {
           (standard 20%, excludes Flat Rate Scheme).
         </p>
       </footer>
+
+      {hasResults ? (
+        <button
+          type="button"
+          onClick={() =>
+            document.getElementById("verdict")?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+          className={`fixed inset-x-0 bottom-0 z-50 flex h-14 w-full items-center justify-between px-5 text-left transition-colors duration-300 sm:hidden ${CHIP_STYLES[results.band]}`}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          aria-label="Jump to your verdict"
+        >
+          <span className="font-display text-2xl tabular-nums leading-none">
+            {results.paidToWork || results.trueHourlyRate === null
+              ? "You paid to work"
+              : rate(results.trueHourlyRate)}
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] opacity-75">
+            per hour
+          </span>
+        </button>
+      ) : null}
     </main>
+
   );
 }
