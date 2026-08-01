@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import {
   BAND_LABEL,
   hours,
@@ -31,25 +31,52 @@ interface VerdictCardProps {
   fee: number;
 }
 
+// Eases a numeric value towards its target over ~400ms.
+function useAnimatedNumber(target: number, duration = 400) {
+  const [value, setValue] = useState(target);
+  const fromRef = useRef(target);
+  const frameRef = useRef<number>(0);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    if (from === target) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = from + (target - from) * eased;
+      fromRef.current = next;
+      setValue(next);
+      if (t < 1) frameRef.current = requestAnimationFrame(tick);
+      else fromRef.current = target;
+    };
+    frameRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [target, duration]);
+
+  return value;
+}
+
 export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
   ({ results, fee }, ref) => {
     const style = BAND_STYLES[results.band];
+    const animatedRate = useAnimatedNumber(results.trueHourlyRate ?? 0);
     const bigNumber =
       results.paidToWork || results.trueHourlyRate === null
         ? "You paid to work"
-        : `${rate(results.trueHourlyRate)}`;
+        : `${rate(animatedRate)}`;
 
     return (
       <div
         ref={ref}
-        className={`${style.bg} ${style.fg} relative overflow-hidden rounded-lg p-7 sm:p-10`}
+        className={`${style.bg} ${style.fg} relative overflow-hidden rounded-lg p-7 transition-colors duration-300 sm:p-10`}
       >
         <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${style.sub}`}>
           {BAND_LABEL[results.band]}
         </p>
 
         <p
-          className={`mt-6 font-display leading-[0.9] ${
+          className={`mt-6 font-display leading-[0.9] tabular-nums ${
             results.paidToWork ? "text-5xl sm:text-6xl" : "text-7xl sm:text-8xl"
           }`}
         >

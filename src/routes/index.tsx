@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
-import { calculate, DEFAULT_INPUTS, money, type TrueRateInputs } from "@/lib/truerate";
+import { calculate, DEFAULT_INPUTS, money, rate, type TrueRateInputs } from "@/lib/truerate";
 import { captureEmail, trackEvent } from "@/lib/track";
 
 export const Route = createFileRoute("/")({
@@ -43,6 +43,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+const CHIP_STYLES: Record<"red" | "amber" | "green", string> = {
+  red: "bg-band-red text-band-red-foreground",
+  amber: "bg-band-amber text-band-amber-foreground",
+  green: "bg-band-green text-band-green-foreground",
+};
+
 function TrueRatePage() {
   const [input, setInput] = useState<TrueRateInputs>(DEFAULT_INPUTS);
   const [overheadsOpen, setOverheadsOpen] = useState(false);
@@ -58,6 +64,15 @@ function TrueRatePage() {
   const set = <K extends keyof TrueRateInputs>(key: K) => (value: TrueRateInputs[K]) =>
     setInput((prev) => ({ ...prev, [key]: value }));
 
+  // Restore a previous unlock (client-only, after hydration).
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("tsr_unlocked") === "1") setUnlocked(true);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
   // Fire "calculated" once per session, after the fee settles.
   useEffect(() => {
     if (!hasResults || trackedRef.current) return;
@@ -68,6 +83,7 @@ function TrueRatePage() {
     }, 1200);
     return () => clearTimeout(t);
   }, [hasResults, results.band]);
+
 
   async function handleShare() {
     if (!cardRef.current) return;
@@ -117,6 +133,11 @@ function TrueRatePage() {
           : null;
       await captureEmail(email.trim().toLowerCase(), source);
       void trackEvent("email_captured", results.band);
+      try {
+        window.localStorage.setItem("tsr_unlocked", "1");
+      } catch {
+        /* storage unavailable */
+      }
       setUnlocked(true);
     } catch {
       toast.error("Something went wrong. Try again.");
@@ -302,7 +323,7 @@ function TrueRatePage() {
       </div>
 
       {hasResults ? (
-        <div className="mt-14 space-y-8">
+        <div id="verdict" className="mt-14 space-y-8">
           <VerdictCard ref={cardRef} results={results} fee={input.fee} />
 
           <button
@@ -367,6 +388,28 @@ function TrueRatePage() {
           (standard 20%, excludes Flat Rate Scheme).
         </p>
       </footer>
+
+      {hasResults ? (
+        <button
+          type="button"
+          onClick={() =>
+            document.getElementById("verdict")?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+          className={`fixed inset-x-0 bottom-0 z-50 flex h-14 w-full items-center justify-between px-5 text-left transition-colors duration-300 sm:hidden ${CHIP_STYLES[results.band]}`}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          aria-label="Jump to your verdict"
+        >
+          <span className="font-display text-2xl tabular-nums leading-none">
+            {results.paidToWork || results.trueHourlyRate === null
+              ? "You paid to work"
+              : rate(results.trueHourlyRate)}
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] opacity-75">
+            per hour
+          </span>
+        </button>
+      ) : null}
     </main>
+
   );
 }
