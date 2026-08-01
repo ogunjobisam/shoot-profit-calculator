@@ -62,8 +62,11 @@ function TrueRatePage() {
   const [email, setEmail] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showFeeOnCard, setShowFeeOnCard] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
   const trackedRef = useRef(false);
+
 
   const results = useMemo(() => calculate(input), [input]);
   const hasResults = input.fee > 0;
