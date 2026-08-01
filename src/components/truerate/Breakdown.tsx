@@ -31,7 +31,8 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   );
 }
 
-export function Breakdown({ input, results, showFee = false }: BreakdownProps) {
+export function Breakdown({ input, results, pdfShowFee = false }: BreakdownProps) {
+  const showFee = pdfShowFee;
   const [generating, setGenerating] = useState(false);
 
   const hourRows = [
