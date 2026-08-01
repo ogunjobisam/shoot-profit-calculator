@@ -47,69 +47,224 @@ export function Breakdown({ input, results }: BreakdownProps) {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "pt", format: "a4" });
-      let y = 56;
-      const left = 48;
 
-      doc.setFontSize(22);
-      doc.text("TrueShootRate — shoot breakdown", left, y);
-      y += 26;
-      doc.setFontSize(10);
-      doc.text(`Generated ${new Date().toLocaleDateString("en-GB")} · trueshootrate.app`, left, y);
-      y += 32;
-
-      const line = (label: string, value: string) => {
-        doc.setFontSize(11);
-        doc.text(label, left, y);
-        doc.text(value, 540, y, { align: "right" });
-        y += 18;
-      };
-      const heading = (text: string) => {
-        y += 10;
-        doc.setFontSize(13);
-        doc.text(text, left, y);
-        y += 18;
-      };
-
-      heading("Headline");
-      line(
-        "True hourly rate",
-        results.paidToWork ? "You paid to work" : `${rate(hourlyValue)}/hr`,
-      );
-      line("Shoot fee (ex VAT)", money(input.fee));
-      line("Net earnings", money(results.netEarnings));
-      line(
-        "True margin",
-        results.marginPct === null ? "—" : `${Math.round(results.marginPct)}%`,
-      );
-
-      heading("Where the money went");
-      line("Travel", money(input.travelCost));
-      line("Second shooter / assistant", money(input.secondShooter));
-      line("Other direct costs", money(input.otherCosts));
-      line("Overheads allocated to this shoot", money(results.overheadPerShoot));
-      line("Total real costs", money(results.trueCost));
-
-      heading("Where the hours went");
-      hourRows.forEach((r) => line(r.label, `${hours(r.h)} hrs · ${money(r.h * hourlyValue)}`));
-      line("Total", `${hours(results.totalHours)} hrs`);
-
-      heading("A 10% price rise");
-      line("New fee", money(raisedFee));
-      line("New hourly rate", `${rate(raisedRate)}/hr`);
-      line("New margin", `${Math.round(raisedMargin)}%`);
-
-      heading("What you should have quoted");
-      line(`At ${money(input.targetRate)}/hr target`, money(results.suggestedFeeExVat));
-      if (input.vatRegistered) {
-        line("Including VAT (what the client sees)", money(results.suggestedFeeIncVat));
+      // Try to embed Instrument Serif for the display numerals / wordmark.
+      let display = "helvetica";
+      let displayStyle = "bold";
+      try {
+        const res = await fetch("/fonts/InstrumentSerif-Regular.ttf");
+        if (res.ok) {
+          const buf = new Uint8Array(await res.arrayBuffer());
+          let binary = "";
+          for (let i = 0; i < buf.length; i += 0x8000) {
+            binary += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+          }
+          doc.addFileToVFS("InstrumentSerif-Regular.ttf", btoa(binary));
+          doc.addFont("InstrumentSerif-Regular.ttf", "InstrumentSerif", "normal");
+          display = "InstrumentSerif";
+          displayStyle = "normal";
+        }
+      } catch {
+        // silent fallback to helvetica-bold
       }
 
-      y += 20;
+      const PAGE_W = 595.28;
+      const PAGE_H = 841.89;
+      const M = 48;
+      const W = PAGE_W - M * 2;
+      const RIGHT = PAGE_W - M;
+
+      const BAND: Record<string, [number, number, number]> = {
+        red: [159, 29, 29],
+        amber: [217, 119, 6],
+        green: [22, 101, 52],
+      };
+      const bandRgb = BAND[results.band] ?? BAND.red;
+      const INK: [number, number, number] = [28, 25, 23];
+      const GREY: [number, number, number] = [120, 113, 108];
+      const onBandLight = results.band === "amber";
+      const bandText: [number, number, number] = onBandLight ? INK : [255, 255, 255];
+
+      // Page background
+      doc.setFillColor(252, 251, 248);
+      doc.rect(0, 0, PAGE_W, PAGE_H, "F");
+
+      let y = M;
+
+      // ---------- HERO ----------
+      const heroH = 250;
+      doc.setFillColor(bandRgb[0], bandRgb[1], bandRgb[2]);
+      doc.roundedRect(M, y, W, heroH, 12, 12, "F");
+
+      const hx = M + 28;
+      let hy = y + 40;
+      doc.setTextColor(bandText[0], bandText[1], bandText[2]);
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
+      doc.text(BAND_LABEL[results.band].toUpperCase(), hx, hy, { charSpace: 1.6 });
+
+      hy += 66;
+      doc.setFont(display, displayStyle);
+      doc.setFontSize(results.paidToWork ? 38 : 64);
       doc.text(
-        "Estimates for guidance only — not accounting or tax advice.",
-        left,
+        results.paidToWork || results.trueHourlyRate === null
+          ? "You paid to work"
+          : rate(results.trueHourlyRate),
+        hx,
+        hy,
+      );
+
+      if (!results.paidToWork && results.trueHourlyRate !== null) {
+        hy += 18;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text("per hour, all in", hx, hy);
+      }
+
+      hy += 34;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      const verdict = doc.splitTextToSize(verdictLine(results, input.fee), W - 56);
+      doc.text(verdict, hx, hy);
+      hy += verdict.length * 17 + 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      doc.text(
+        `True margin: ${
+          results.marginPct === null ? "—" : `${Math.round(results.marginPct)}%`
+        }  ·  ${hours(results.totalHours)} hours of your life  ·  ${money(
+          results.trueCost,
+        )} real costs`,
+        hx,
+        hy,
+      );
+
+      y += heroH + 36;
+
+      // ---------- table helpers ----------
+      const sectionHeading = (text: string) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(GREY[0], GREY[1], GREY[2]);
+        doc.text(text.toUpperCase(), M, y, { charSpace: 1.4 });
+        y += 8;
+        doc.setDrawColor(INK[0], INK[1], INK[2]);
+        doc.setLineWidth(2);
+        doc.line(M, y, RIGHT, y);
+        y += 20;
+      };
+
+      const row = (label: string, value: string, strong = false) => {
+        doc.setFont("helvetica", strong ? "bold" : "normal");
+        doc.setFontSize(strong ? 11 : 10.5);
+        doc.setTextColor(strong ? INK[0] : 68, strong ? INK[1] : 64, strong ? INK[2] : 60);
+        doc.text(label, M, y);
+        doc.text(value, RIGHT, y, { align: "right" });
+        y += 20;
+      };
+
+      const thinRule = () => {
+        y -= 8;
+        doc.setDrawColor(214, 211, 205);
+        doc.setLineWidth(0.7);
+        doc.line(M, y, RIGHT, y);
+        y += 20;
+      };
+
+      const hrs = (n: number) => `${hours(n)} ${n === 1 ? "hr" : "hrs"}`;
+
+      // ---------- MONEY ----------
+      sectionHeading("Where the money went");
+      row("Shoot fee (ex VAT)", money(input.fee));
+      row("Travel", `− ${money(input.travelCost)}`);
+      row("Second shooter / assistant", `− ${money(input.secondShooter)}`);
+      row("Other direct costs", `− ${money(input.otherCosts)}`);
+      row(
+        `Overheads (1/${input.shootsPerYear} of your year)`,
+        `− ${money(results.overheadPerShoot)}`,
+      );
+      thinRule();
+      row("Total real costs", money(results.trueCost), true);
+
+      y += 18;
+
+      // ---------- HOURS ----------
+      sectionHeading("Where the hours went");
+      hourRows.forEach((r) => row(`${r.label} · ${hrs(r.h)}`, money(r.h * hourlyValue)));
+      thinRule();
+      row(`Total · ${hrs(results.totalHours)}`, money(results.netEarnings), true);
+
+      y += 14;
+
+      // ---------- TEASER ----------
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(bandRgb[0], bandRgb[1], bandRgb[2]);
+      doc.text(
+        `If you'd charged 10% more: ${money(raisedFee)} → ${rate(
+          raisedRate,
+        )}/hr · ${Math.round(raisedMargin)}% margin`,
+        M,
         y,
+      );
+
+      // ---------- QUOTE BLOCK ----------
+      const quoteH = input.vatRegistered ? 132 : 112;
+      const quoteY = PAGE_H - M - 78 - quoteH;
+      doc.setFillColor(INK[0], INK[1], INK[2]);
+      doc.roundedRect(M, quoteY, W, quoteH, 12, 12, "F");
+
+      let qy = quoteY + 34;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(168, 162, 155);
+      doc.text("YOU SHOULD HAVE QUOTED", M + 28, qy, { charSpace: 1.4 });
+
+      qy += 48;
+      doc.setFont(display, displayStyle);
+      doc.setFontSize(40);
+      doc.setTextColor(255, 255, 255);
+      doc.text(money(results.suggestedFeeExVat), M + 28, qy);
+
+      qy += 22;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      doc.setTextColor(168, 162, 155);
+      doc.text(
+        input.vatRegistered
+          ? `${money(results.suggestedFeeIncVat)} inc VAT — what the client sees · at your ${money(
+              input.targetRate,
+            )}/hr target`
+          : `at your ${money(input.targetRate)}/hr target`,
+        M + 28,
+        qy,
+      );
+
+      // ---------- FOOTER ----------
+      let fy = PAGE_H - M - 52;
+      doc.setDrawColor(bandRgb[0], bandRgb[1], bandRgb[2]);
+      doc.setLineWidth(3);
+      doc.line(M, fy, RIGHT, fy);
+
+      fy += 20;
+      doc.setFont(display, displayStyle);
+      doc.setFontSize(15);
+      doc.setTextColor(INK[0], INK[1], INK[2]);
+      doc.text("TrueShootRate", M, fy);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      doc.text("trueshootrate.app", RIGHT, fy, { align: "right" });
+
+      fy += 18;
+      doc.setFontSize(8);
+      doc.setTextColor(GREY[0], GREY[1], GREY[2]);
+      doc.text(
+        `Estimates for guidance only — not accounting or tax advice.  ·  Generated ${new Date().toLocaleDateString(
+          "en-GB",
+        )}`,
+        M,
+        fy,
       );
 
       doc.save("trueshootrate-breakdown.pdf");
@@ -117,6 +272,7 @@ export function Breakdown({ input, results }: BreakdownProps) {
       setGenerating(false);
     }
   }
+
 
   return (
     <div className="space-y-10">
