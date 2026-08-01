@@ -14,7 +14,8 @@ import {
 interface BreakdownProps {
   input: TrueRateInputs;
   results: TrueRateResults;
-  showFee?: boolean;
+  /** Fee visibility in the exported PDF only. The on-screen view always shows it. */
+  pdfShowFee?: boolean;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
