@@ -28,10 +28,10 @@ export const Route = createFileRoute("/")({
           "A free calculator for UK photographers: work out your true hourly rate once editing, admin, travel and gear are counted — and what you should have quoted.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://trueshootrate.app/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://trueshootrate.app/" }],
   }),
 });
 
@@ -121,7 +121,7 @@ function TrueRatePage() {
       <Toaster />
 
       <header>
-        <p className="font-display text-lg tracking-tight">TrueRate</p>
+        <p className="font-display text-lg tracking-tight">TrueShootRate</p>
         <h1 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
           What did you actually earn per hour on your last shoot?
         </h1>

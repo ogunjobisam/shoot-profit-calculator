@@ -72,7 +72,7 @@ export const VerdictCard = forwardRef<HTMLDivElement, VerdictCardProps>(
           className={`mt-9 flex items-baseline justify-between border-t pt-4 text-xs ${style.sub}`}
           style={{ borderColor: "currentColor" }}
         >
-          <span className="font-display text-base tracking-tight">TrueRate</span>
+          <span className="font-display text-base tracking-tight">TrueShootRate</span>
           <span className="tracking-wide">trueshootrate.app</span>
         </div>
       </div>
