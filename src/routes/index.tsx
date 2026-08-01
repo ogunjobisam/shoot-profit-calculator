@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
+import { ShareFrame } from "@/components/truerate/ShareFrame";
 import {
   calculate,
   DEFAULT_INPUTS,
@@ -63,8 +64,8 @@ function TrueRatePage() {
   const [unlocked, setUnlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showFeeOnCard, setShowFeeOnCard] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const exportRef = useRef<HTMLDivElement>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
+  const storyRef = useRef<HTMLDivElement>(null);
   const trackedRef = useRef(false);
 
 
@@ -115,27 +116,31 @@ function TrueRatePage() {
   }, [hasResults, results.band]);
 
 
-  async function handleShare() {
-    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+  async function handleShare(variant: "feed" | "story" = "feed") {
+    const node = variant === "story" ? storyRef.current : feedRef.current;
     if (!node) return;
     const shareUrl = "https://trueshootrate.app/";
+    const filename = variant === "story" ? "trueshootrate-story.png" : "trueshootrate.png";
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 1, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
 
-
-      const file = new File([blob], "trueshootrate.png", { type: "image/png" });
+      const file = new File([blob], filename, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: "TrueShootRate", text: shareUrl });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "trueshootrate.png";
+        a.download = filename;
         a.click();
         URL.revokeObjectURL(url);
-        toast.success("Verdict card saved as an image.");
+        toast.success(
+          variant === "story"
+            ? "Story card saved (1080x1920)."
+            : "Verdict card saved (1080x1350).",
+        );
       }
 
       try {
@@ -151,27 +156,30 @@ function TrueRatePage() {
     }
   }
 
-  async function handleDownloadImage(hd = false) {
-    const node = showFeeOnCard ? cardRef.current : exportRef.current;
+  async function handleDownloadImage(variant: "feed" | "story" = "feed") {
+    const node = variant === "story" ? storyRef.current : feedRef.current;
     if (!node) return;
     try {
       const { toBlob } = await import("html-to-image");
-      const blob = await toBlob(node, { pixelRatio: hd ? 4 : 2, cacheBust: true });
+      const blob = await toBlob(node, { pixelRatio: 1, cacheBust: true });
       if (!blob) throw new Error("Could not render card");
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = hd ? "trueshootrate-hd.png" : "trueshootrate.png";
+      a.download = variant === "story" ? "trueshootrate-story.png" : "trueshootrate.png";
       a.click();
       URL.revokeObjectURL(url);
       toast.success(
-        hd ? "High-resolution card saved (4x)." : "Verdict card saved as an image.",
+        variant === "story"
+          ? "Story card saved (1080x1920)."
+          : "Verdict card saved (1080x1350).",
       );
       void trackEvent("shared", results.band);
     } catch {
       toast.error("Couldn't create the image. Try again.");
     }
   }
+
 
 
 
@@ -429,22 +437,31 @@ function TrueRatePage() {
       {hasResults ? (
         <div id="verdict" className="mt-14 space-y-8">
           <VerdictCard
-            ref={cardRef}
             results={results}
             fee={input.fee}
             shootsPerYear={input.shootsPerYear}
           />
 
-          {/* Off-screen fee-less variant used for the shared image. */}
-          <div aria-hidden className="pointer-events-none fixed -left-[10000px] top-0 w-[640px]">
-            <VerdictCard
-              ref={exportRef}
-              results={results}
-              fee={input.fee}
-              shootsPerYear={input.shootsPerYear}
-              hideFee
-            />
+          {/* Off-screen fixed-size export frames (4:5 feed and 9:16 story). */}
+          <div aria-hidden className="pointer-events-none fixed -left-[20000px] top-0">
+            <ShareFrame ref={feedRef} variant="feed" band={results.band}>
+              <VerdictCard
+                results={results}
+                fee={input.fee}
+                shootsPerYear={input.shootsPerYear}
+                hideFee={!showFeeOnCard}
+              />
+            </ShareFrame>
+            <ShareFrame ref={storyRef} variant="story" band={results.band}>
+              <VerdictCard
+                results={results}
+                fee={input.fee}
+                shootsPerYear={input.shootsPerYear}
+                hideFee={!showFeeOnCard}
+              />
+            </ShareFrame>
           </div>
+
 
           <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card p-4">
             <div>
@@ -471,52 +488,55 @@ function TrueRatePage() {
             </button>
           </div>
 
-          {/* Live preview of exactly what gets shared. */}
+          {/* Live preview of exactly what gets shared (4:5 feed frame). */}
           <div className="rounded-md border border-dashed border-border p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Preview of the image you'll share
+              Preview of the image you'll share · 1080 × 1350
             </p>
-            <div className="mt-3 overflow-hidden rounded-md">
-              <div style={{ zoom: 0.55 }}>
-                <VerdictCard
-                  results={results}
-                  fee={input.fee}
-                  shootsPerYear={input.shootsPerYear}
-                  hideFee={!showFeeOnCard}
-                />
+            <div className="mt-3 flex justify-center">
+              <div
+                className="overflow-hidden rounded-md"
+                style={{ width: 1080 * 0.26, height: 1350 * 0.26 }}
+              >
+                <div style={{ transform: "scale(0.26)", transformOrigin: "top left" }}>
+                  <ShareFrame variant="feed" band={results.band}>
+                    <VerdictCard
+                      results={results}
+                      fee={input.fee}
+                      shootsPerYear={input.shootsPerYear}
+                      hideFee={!showFeeOnCard}
+                    />
+                  </ShareFrame>
+                </div>
               </div>
             </div>
           </div>
 
-
-
           <button
             type="button"
-            onClick={handleShare}
+            onClick={() => void handleShare("feed")}
             className="w-full rounded-md border border-primary px-5 py-4 text-base font-semibold transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             Share this verdict
           </button>
 
-          <div className="-mt-4 grid grid-cols-2 gap-3">
+          <div className="-mt-4 flex flex-col items-center gap-2">
             <button
               type="button"
-              onClick={() => void handleDownloadImage(false)}
-              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              onClick={() => void handleShare("story")}
+              className="text-sm font-semibold text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
             >
-              Download PNG
+              Get the Story size (9:16)
             </button>
             <button
               type="button"
-              onClick={() => void handleDownloadImage(true)}
-              className="w-full rounded-md border border-border px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              onClick={() => void handleDownloadImage("feed")}
+              className="text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
             >
-              Download HD PNG
+              Download PNG (1080 × 1350)
             </button>
           </div>
-          <p className="-mt-6 text-xs text-muted-foreground">
-            HD renders at 4x for crisp text on Instagram, TikTok and LinkedIn.
-          </p>
+
 
 
           <div className="rounded-md border border-border bg-card p-6">
