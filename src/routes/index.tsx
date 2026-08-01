@@ -535,7 +535,7 @@ function TrueRatePage() {
             <h2 className="font-display text-2xl tracking-tight">Get the full breakdown</h2>
             {unlocked ? (
               <div className="mt-6">
-                <Breakdown input={input} results={results} showFee={showFeeOnCard} />
+                <Breakdown input={input} results={results} pdfShowFee={showFeeOnCard} />
               </div>
             ) : (
               <>

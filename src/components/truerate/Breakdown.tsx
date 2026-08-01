@@ -14,7 +14,8 @@ import {
 interface BreakdownProps {
   input: TrueRateInputs;
   results: TrueRateResults;
-  showFee?: boolean;
+  /** Fee visibility in the exported PDF only. The on-screen view always shows it. */
+  pdfShowFee?: boolean;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
@@ -30,7 +31,8 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   );
 }
 
-export function Breakdown({ input, results, showFee = false }: BreakdownProps) {
+export function Breakdown({ input, results, pdfShowFee = false }: BreakdownProps) {
+  const showFee = pdfShowFee;
   const [generating, setGenerating] = useState(false);
 
   const hourRows = [
@@ -183,8 +185,10 @@ export function Breakdown({ input, results, showFee = false }: BreakdownProps) {
       const hrs = (n: number) => `${hours(n)} ${n === 1 ? "hr" : "hrs"}`;
 
       // ---------- MONEY ----------
-      sectionHeading("Where the money went");
-      row("Shoot fee (ex VAT)", showFee ? money(input.fee) : "hidden");
+      sectionHeading(showFee ? "Where the money went" : "Costs");
+      if (showFee) {
+        row("Shoot fee (ex VAT)", money(input.fee));
+      }
       row("Travel", `- ${money(input.travelCost)}`);
       row("Second shooter / assistant", `- ${money(input.secondShooter)}`);
       row("Other direct costs", `- ${money(input.otherCosts)}`);
