@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
-import { ShareFrame } from "@/components/truerate/ShareFrame";
+import { ExportCard, EXPORT_SIZES } from "@/components/truerate/ExportCard";
+import { ScaledPreview } from "@/components/truerate/ScaledPreview";
 import {
   calculate,
   DEFAULT_INPUTS,
@@ -64,6 +65,7 @@ function TrueRatePage() {
   const [unlocked, setUnlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showFeeOnCard, setShowFeeOnCard] = useState(false);
+  const [previewVariant, setPreviewVariant] = useState<"feed" | "story">("feed");
   const feedRef = useRef<HTMLDivElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
   const trackedRef = useRef(false);
@@ -442,24 +444,24 @@ function TrueRatePage() {
             shootsPerYear={input.shootsPerYear}
           />
 
-          {/* Off-screen fixed-size export frames (4:5 feed and 9:16 story). */}
+          {/* Off-screen full-bleed export posters (4:5 feed and 9:16 story). */}
           <div aria-hidden className="pointer-events-none fixed -left-[20000px] top-0">
-            <ShareFrame ref={feedRef} variant="feed" band={results.band}>
-              <VerdictCard
-                results={results}
-                fee={input.fee}
-                shootsPerYear={input.shootsPerYear}
-                hideFee={!showFeeOnCard}
-              />
-            </ShareFrame>
-            <ShareFrame ref={storyRef} variant="story" band={results.band}>
-              <VerdictCard
-                results={results}
-                fee={input.fee}
-                shootsPerYear={input.shootsPerYear}
-                hideFee={!showFeeOnCard}
-              />
-            </ShareFrame>
+            <ExportCard
+              ref={feedRef}
+              variant="feed"
+              results={results}
+              fee={input.fee}
+              shootsPerYear={input.shootsPerYear}
+              hideFee={!showFeeOnCard}
+            />
+            <ExportCard
+              ref={storyRef}
+              variant="story"
+              results={results}
+              fee={input.fee}
+              shootsPerYear={input.shootsPerYear}
+              hideFee={!showFeeOnCard}
+            />
           </div>
 
 
@@ -488,27 +490,42 @@ function TrueRatePage() {
             </button>
           </div>
 
-          {/* Live preview of exactly what gets shared (4:5 feed frame). */}
+          {/* Live preview of exactly what gets shared. */}
           <div className="rounded-md border border-dashed border-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Preview of the image you'll share · 1080 × 1350
-            </p>
-            <div className="mt-3 flex justify-center">
-              <div
-                className="overflow-hidden rounded-md"
-                style={{ width: 1080 * 0.26, height: 1350 * 0.26 }}
-              >
-                <div style={{ transform: "scale(0.26)", transformOrigin: "top left" }}>
-                  <ShareFrame variant="feed" band={results.band}>
-                    <VerdictCard
-                      results={results}
-                      fee={input.fee}
-                      shootsPerYear={input.shootsPerYear}
-                      hideFee={!showFeeOnCard}
-                    />
-                  </ShareFrame>
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Preview of the image you'll share
+              </p>
+              <div className="flex overflow-hidden rounded-md border border-border">
+                {(["feed", "story"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setPreviewVariant(v)}
+                    className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      previewVariant === v
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground"
+                    }`}
+                  >
+                    {v === "feed" ? "Feed 4:5" : "Story 9:16"}
+                  </button>
+                ))}
               </div>
+            </div>
+            <div className="mt-3 overflow-hidden rounded-md">
+              <ScaledPreview
+                width={EXPORT_SIZES[previewVariant].width}
+                height={EXPORT_SIZES[previewVariant].height}
+              >
+                <ExportCard
+                  variant={previewVariant}
+                  results={results}
+                  fee={input.fee}
+                  shootsPerYear={input.shootsPerYear}
+                  hideFee={!showFeeOnCard}
+                />
+              </ScaledPreview>
             </div>
           </div>
 
