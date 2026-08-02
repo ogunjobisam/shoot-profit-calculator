@@ -443,24 +443,24 @@ function TrueRatePage() {
             shootsPerYear={input.shootsPerYear}
           />
 
-          {/* Off-screen fixed-size export frames (4:5 feed and 9:16 story). */}
+          {/* Off-screen full-bleed export posters (4:5 feed and 9:16 story). */}
           <div aria-hidden className="pointer-events-none fixed -left-[20000px] top-0">
-            <ShareFrame ref={feedRef} variant="feed" band={results.band}>
-              <VerdictCard
-                results={results}
-                fee={input.fee}
-                shootsPerYear={input.shootsPerYear}
-                hideFee={!showFeeOnCard}
-              />
-            </ShareFrame>
-            <ShareFrame ref={storyRef} variant="story" band={results.band}>
-              <VerdictCard
-                results={results}
-                fee={input.fee}
-                shootsPerYear={input.shootsPerYear}
-                hideFee={!showFeeOnCard}
-              />
-            </ShareFrame>
+            <ExportCard
+              ref={feedRef}
+              variant="feed"
+              results={results}
+              fee={input.fee}
+              shootsPerYear={input.shootsPerYear}
+              hideFee={!showFeeOnCard}
+            />
+            <ExportCard
+              ref={storyRef}
+              variant="story"
+              results={results}
+              fee={input.fee}
+              shootsPerYear={input.shootsPerYear}
+              hideFee={!showFeeOnCard}
+            />
           </div>
 
 
