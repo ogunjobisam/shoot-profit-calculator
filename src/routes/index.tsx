@@ -557,15 +557,23 @@ function TrueRatePage() {
 
 
           <div className="rounded-md border border-border bg-card p-6">
-            <p className="text-sm text-muted-foreground">You should have quoted</p>
-            <p className="mt-1 font-display text-4xl tracking-tight">
-              {money(results.suggestedFeeExVat)}
-            </p>
-            {input.vatRegistered ? (
-              <p className="mt-2 text-sm text-muted-foreground">
-                {money(results.suggestedFeeIncVat)} including VAT — what the client sees.
+            {results.suggestedFeeExVat === null ? (
+              <p className="text-sm text-muted-foreground">
+                Set a target hourly rate above to see what you should have quoted.
               </p>
-            ) : null}
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">You should have quoted</p>
+                <p className="mt-1 font-display text-4xl tracking-tight">
+                  {money(results.suggestedFeeExVat)}
+                </p>
+                {input.vatRegistered && results.suggestedFeeIncVat !== null ? (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {money(results.suggestedFeeIncVat)} including VAT — what the client sees.
+                  </p>
+                ) : null}
+              </>
+            )}
           </div>
 
           <section className="rounded-md border border-border bg-card p-6">
