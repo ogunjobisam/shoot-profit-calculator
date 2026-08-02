@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { NumberField } from "@/components/truerate/NumberField";
 import { VerdictCard } from "@/components/truerate/VerdictCard";
 import { Breakdown } from "@/components/truerate/Breakdown";
-import { ShareFrame } from "@/components/truerate/ShareFrame";
+import { ExportCard, EXPORT_SIZES } from "@/components/truerate/ExportCard";
+import { ScaledPreview } from "@/components/truerate/ScaledPreview";
 import {
   calculate,
   DEFAULT_INPUTS,
