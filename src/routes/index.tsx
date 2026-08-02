@@ -65,6 +65,7 @@ function TrueRatePage() {
   const [unlocked, setUnlocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showFeeOnCard, setShowFeeOnCard] = useState(false);
+  const [previewVariant, setPreviewVariant] = useState<"feed" | "story">("feed");
   const feedRef = useRef<HTMLDivElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
   const trackedRef = useRef(false);
