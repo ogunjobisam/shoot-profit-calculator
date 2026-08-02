@@ -241,36 +241,38 @@ export function Breakdown({ input, results, pdfShowFee = false }: BreakdownProps
       }
 
       // ---------- QUOTE BLOCK ----------
-      const quoteH = input.vatRegistered ? 132 : 112;
-      const quoteY = PAGE_H - M - 78 - quoteH;
-      doc.setFillColor(INK[0], INK[1], INK[2]);
-      doc.roundedRect(M, quoteY, W, quoteH, 12, 12, "F");
+      if (results.suggestedFeeExVat !== null) {
+        const quoteH = input.vatRegistered ? 132 : 112;
+        const quoteY = PAGE_H - M - 78 - quoteH;
+        doc.setFillColor(INK[0], INK[1], INK[2]);
+        doc.roundedRect(M, quoteY, W, quoteH, 12, 12, "F");
 
-      let qy = quoteY + 34;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.setTextColor(168, 162, 155);
-      doc.text("YOU SHOULD HAVE QUOTED", M + 28, qy, { charSpace: 1.4 });
+        let qy = quoteY + 34;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(168, 162, 155);
+        doc.text("YOU SHOULD HAVE QUOTED", M + 28, qy, { charSpace: 1.4 });
 
-      qy += 48;
-      doc.setFont(display, displayStyle);
-      doc.setFontSize(40);
-      doc.setTextColor(255, 255, 255);
-      doc.text(money(results.suggestedFeeExVat), M + 28, qy);
+        qy += 48;
+        doc.setFont(display, displayStyle);
+        doc.setFontSize(40);
+        doc.setTextColor(255, 255, 255);
+        doc.text(money(results.suggestedFeeExVat), M + 28, qy);
 
-      qy += 22;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.5);
-      doc.setTextColor(168, 162, 155);
-      doc.text(
-        input.vatRegistered
-          ? `${money(results.suggestedFeeIncVat)} inc VAT — what the client sees · at your ${money(
-              input.targetRate,
-            )}/hr target`
-          : `at your ${money(input.targetRate)}/hr target`,
-        M + 28,
-        qy,
-      );
+        qy += 22;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(168, 162, 155);
+        doc.text(
+          input.vatRegistered && results.suggestedFeeIncVat !== null
+            ? `${money(results.suggestedFeeIncVat)} inc VAT — what the client sees · at your ${money(
+                input.targetRate,
+              )}/hr target`
+            : `at your ${money(input.targetRate)}/hr target`,
+          M + 28,
+          qy,
+        );
+      }
 
       // ---------- FOOTER ----------
       let fy = PAGE_H - M - 52;

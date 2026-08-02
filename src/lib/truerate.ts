@@ -63,8 +63,8 @@ export interface TrueRateResults {
   netEarnings: number;
   trueHourlyRate: number | null;
   marginPct: number | null;
-  suggestedFeeExVat: number;
-  suggestedFeeIncVat: number;
+  suggestedFeeExVat: number | null;
+  suggestedFeeIncVat: number | null;
   band: Band;
   paidToWork: boolean;
 }
@@ -116,8 +116,12 @@ export function calculate(input: TrueRateInputs): TrueRateResults {
   const marginPct =
     input.fee > 0 ? Math.max(-100, round2((netEarnings / input.fee) * 100)) : null;
 
-  const suggestedFeeExVat = round2(input.targetRate * totalHours + trueCost);
-  const suggestedFeeIncVat = round2(suggestedFeeExVat * (1 + VAT_RATE));
+  const hasTarget = Number.isFinite(input.targetRate) && input.targetRate > 0;
+  const suggestedFeeExVat = hasTarget
+    ? round2(input.targetRate * totalHours + trueCost)
+    : null;
+  const suggestedFeeIncVat =
+    suggestedFeeExVat === null ? null : round2(suggestedFeeExVat * (1 + VAT_RATE));
 
   return {
     totalHours,
