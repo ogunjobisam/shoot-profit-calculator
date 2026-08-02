@@ -489,27 +489,42 @@ function TrueRatePage() {
             </button>
           </div>
 
-          {/* Live preview of exactly what gets shared (4:5 feed frame). */}
+          {/* Live preview of exactly what gets shared. */}
           <div className="rounded-md border border-dashed border-border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Preview of the image you'll share · 1080 × 1350
-            </p>
-            <div className="mt-3 flex justify-center">
-              <div
-                className="overflow-hidden rounded-md"
-                style={{ width: 1080 * 0.26, height: 1350 * 0.26 }}
-              >
-                <div style={{ transform: "scale(0.26)", transformOrigin: "top left" }}>
-                  <ShareFrame variant="feed" band={results.band}>
-                    <VerdictCard
-                      results={results}
-                      fee={input.fee}
-                      shootsPerYear={input.shootsPerYear}
-                      hideFee={!showFeeOnCard}
-                    />
-                  </ShareFrame>
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Preview of the image you'll share
+              </p>
+              <div className="flex overflow-hidden rounded-md border border-border">
+                {(["feed", "story"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setPreviewVariant(v)}
+                    className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
+                      previewVariant === v
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground"
+                    }`}
+                  >
+                    {v === "feed" ? "Feed 4:5" : "Story 9:16"}
+                  </button>
+                ))}
               </div>
+            </div>
+            <div className="mt-3 overflow-hidden rounded-md">
+              <ScaledPreview
+                width={EXPORT_SIZES[previewVariant].width}
+                height={EXPORT_SIZES[previewVariant].height}
+              >
+                <ExportCard
+                  variant={previewVariant}
+                  results={results}
+                  fee={input.fee}
+                  shootsPerYear={input.shootsPerYear}
+                  hideFee={!showFeeOnCard}
+                />
+              </ScaledPreview>
             </div>
           </div>
 
